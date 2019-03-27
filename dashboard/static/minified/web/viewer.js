@@ -1536,7 +1536,6 @@ var PDFViewerApplication = {
   },
   beforePrint: function beforePrint() {
     var _this7 = this;
-
     if (this.printService) {
       return;
     }
@@ -1561,6 +1560,7 @@ var PDFViewerApplication = {
     this.printService = printService;
     this.forceRendering();
     printService.layout();
+    console.log("printService",printService.layout())
   },
   afterPrint: function pdfViewSetupAfterPrint() {
     if (this.printService) {
@@ -15369,6 +15369,7 @@ PDFPrintService.prototype = {
     return new Promise(renderNextPage);
   },
   useRenderedPage: function useRenderedPage(printItem) {
+    console.log("printItem",printItem)
     this.throwIfInactive();
     var img = document.createElement('img');
     img.style.width = printItem.width;
@@ -15401,8 +15402,18 @@ PDFPrintService.prototype = {
           resolve();
           return;
         }
+        var body = document.querySelector('body');
+        console.log("body",body)
+        // if(body.getAttribute('data-metadata')){
+        //   window.parent.postMessage("kalaal", '*');
+        // }
+        //else{
+        //   print.call(window);
+        // }
 
         print.call(window);
+
+
         setTimeout(resolve, 20);
       }, 0);
     });
@@ -15447,6 +15458,7 @@ window.print = function print() {
 
     var activeServiceOnEntry = activeService;
     activeService.renderPages().then(function () {
+      console.log("kakaka")
       return activeServiceOnEntry.performPrint();
     }).catch(function () {}).then(function () {
       if (activeServiceOnEntry.active) {
@@ -15457,6 +15469,12 @@ window.print = function print() {
 };
 
 function dispatchEvent(eventType) {
+  if(eventType=="custom_beforeprint"){
+      var event = document.createEvent('CustomEvent');
+      event.initCustomEvent('beforeprint', false, false, 'custom');
+      window.dispatchEvent(event);
+      return
+  }
   var event = document.createEvent('CustomEvent');
   event.initCustomEvent(eventType, false, false, 'custom');
   window.dispatchEvent(event);

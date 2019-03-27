@@ -40,13 +40,13 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       <script src={%  static 'minified/build/pdf.worker.js'  %}></script>
 <script src={%  static 'minified/web/viewer.js'  %}></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 
 
   </head>
 
   <body tabindex="1" class="loadingInProgress">
-  <dl class="pv_table-cell band-options pv_v-align" style="width: 25%;"><dt class="attachment__assignto_label pv_inline-block attachment__assignto_label pv_inline-block">Assigned To:</dt><dd class="attachment__assignto pv_inline-block"><button class="attachment__inline_dropdown dropdown-toggle text_button pl-10 pr-10" type="button" role="menuitem" aria-haspopup="true" aria-expanded="false">None<span class="caret"></span></button></dd></dl>
-    <div id="outerContainer">
+     <div id="outerContainer">
 
       <div id="sidebarContainer">
         <div id="toolbarSidebar">
@@ -393,6 +393,44 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
+
+<script>
+        // addEventListener support for IE8
+{#         var results = document.getElementById('secondaryPrint');#}
+       function bindEvent(element, eventName, eventHandler) {
+            if (element.addEventListener) {
+                element.addEventListener(eventName, eventHandler, false);
+            } else if (element.attachEvent) {
+                element.attachEvent('on' + eventName, eventHandler);
+            }
+        }
+
+        // Send a message to the parent
+        var sendMessage = function (msg) {
+            // Make sure you are sending a string, and to stringify JSON
+            window.parent.postMessage(msg, '*');
+        };
+
+        var results = document.getElementById('results'),
+            messageButton = document.getElementById('message_button');
+        secondaryPrint = document.getElementById('secondaryPrint');
+
+        // Listen to messages from parent window
+        bindEvent(window, 'message', function (e) {
+                var body = document.querySelector('body');
+                body.setAttribute('data-metadata', true);
+{#            results.innerHTML = e.data;#}
+
+        });
+
+        // Send random message data on every button click
+        bindEvent(messageButton, 'click', function (e) {
+            var random = Math.random();
+            sendMessage('' + random);
+        });
+
+    </script>
+
   </body>
 </html>
 
